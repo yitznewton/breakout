@@ -1,6 +1,6 @@
-class PlayingField {
-  private canvas: HTMLCanvasElement;
-  private context: CanvasRenderingContext2D;
+class Ball {
+  private canvasWidth: number;
+  private canvasHeight: number;
   private ballX: number;
   private ballY: number;
   private ballR: number;
@@ -9,9 +9,9 @@ class PlayingField {
   private dy: number = -2;
   private paddle: Paddle;
 
-  constructor(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, startX: number, startY: number, r: number, startColor: string, paddle: Paddle) {
-    this.canvas = canvas;
-    this.context = context;
+  constructor(canvasWidth: number, canvasHeight: number, startX: number, startY: number, r: number, startColor: string, paddle: Paddle) {
+    this.canvasWidth = canvasWidth;
+    this.canvasHeight = canvasHeight;
     this.ballX = startX;
     this.ballY = startY;
     this.ballR = r;
@@ -25,16 +25,16 @@ class PlayingField {
     this.setNextCenter();
   }
 
-  draw() {
-    drawCircle(this.context, this.ballX, this.ballY, this.ballR, this.ballStartColor);
+  draw(context: CanvasRenderingContext2D) {
+    drawCircle(context, this.ballX, this.ballY, this.ballR, this.ballStartColor);
   }
 
   isGameOver() {
-    return this.ballY + this.dy > this.canvas.height;
+    return this.ballY + this.dy > this.canvasHeight;
   }
 
   private anticipatePaddleCollision() {
-    if (this.ballY + this.dy <= this.canvas.height - this.paddle.height) return;
+    if (this.ballY + this.dy <= this.canvasHeight - this.paddle.height) return;
 
     if (this.ballX > this.paddle.x && this.ballX < this.paddle.x + this.paddle.width) {
       this.dy = -this.dy;
@@ -44,15 +44,15 @@ class PlayingField {
   private anticipateWallCollisions() {
     if (this.ballY + this.dy < 0) {
       this.dy = -this.dy;
-      this.ballStartColor = PlayingField.randomColor();
+      this.ballStartColor = Ball.randomColor();
     }
     if (this.ballX + this.dx < 0) {
       this.dx = -this.dx;
-      this.ballStartColor = PlayingField.randomColor();
+      this.ballStartColor = Ball.randomColor();
     }
-    if (this.ballX + this.dx > this.canvas.width) {
+    if (this.ballX + this.dx > this.canvasWidth) {
       this.dx = -this.dx;
-      this.ballStartColor = PlayingField.randomColor();
+      this.ballStartColor = Ball.randomColor();
     }
   }
 
@@ -201,19 +201,19 @@ const paddleWidth = 75;
 const r = 10;
 const paddleInput = new PaddleInput();
 let paddle = new Paddle(canvas.width, canvas.height, paddleHeight, paddleWidth);
-let playingField = new PlayingField(canvas, context, ballStartX, ballStartY, r, ballStartColor, paddle);
+let ball = new Ball(canvas.width, canvas.height, ballStartX, ballStartY, r, ballStartColor, paddle);
 
 const draw = () => {
   clear(context, canvas);
-  playingField.advance();
+  ball.advance();
 
-  if (playingField.isGameOver()) {
+  if (ball.isGameOver()) {
     alert('GAME OVER');
-    playingField = new PlayingField(canvas, context, ballStartX, ballStartY, r, ballStartColor, paddle);
+    ball = new Ball(canvas.width, canvas.height, ballStartX, ballStartY, r, ballStartColor, paddle);
     paddle = new Paddle(canvas.width, canvas.height, paddleHeight, paddleWidth);
   }
 
-  playingField.draw();
+  ball.draw(context);
   paddle.update(paddleInput.current());
   paddle.draw(context);
 
