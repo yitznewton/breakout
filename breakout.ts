@@ -52,15 +52,24 @@ class Ball {
   }
 }
 
+enum PaddleDirection {
+  Left = -1,
+  Stationary = 0,
+  Right = 1
+}
+
 class Paddle {
+  private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
   private x: number;
   private y: number;
   private color: string = '#0095DD';
   private height: number;
   private width: number;
+  private direction: PaddleDirection = PaddleDirection.Stationary;
 
   constructor(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, height: number, width: number) {
+    this.canvas = canvas;
     this.context = context;
     this.height = height;
     this.width = width;
@@ -70,6 +79,22 @@ class Paddle {
 
   draw() {
     drawRectangle(this.context, this.x, this.y, this.width, this.height, this.color);
+    this.anticipateWallCollision();
+    this.setNextPoint();
+  }
+
+  private setNextPoint() {
+    this.x += this.direction;
+  }
+
+  private anticipateWallCollision() {
+    if (this.x <= 0) {
+      this.direction = PaddleDirection.Stationary;
+    }
+
+    if (this.x + this.width > this.canvas.width) {
+      this.direction = PaddleDirection.Stationary;
+    }
   }
 }
 
