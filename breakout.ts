@@ -112,40 +112,44 @@ class PaddleInput {
 class Paddle {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
-  readonly x: number;
-  readonly y: number;
-  readonly height: number;
-  readonly width: number;
+  private _x: number;
+  private y: number;
+  private _height: number;
+  private _width: number;
   private color: string = '#0095DD';
   private direction: PaddleDirection = PaddleDirection.Stationary;
 
   constructor(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, height: number, width: number) {
     this.canvas = canvas;
     this.context = context;
-    this.height = height;
-    this.width = width;
-    this.x = (canvas.width - this.width) / 2;
-    this.y = canvas.height - this.height;
+    this._height = height;
+    this._width = width;
+    this._x = (canvas.width - this._width) / 2;
+    this.y = canvas.height - this._height;
   }
 
   draw(direction: PaddleDirection) {
     this.direction = direction;
     this.setNextPoint();
     this.anticipateWallCollision();
-    drawRectangle(this.context, this.x, this.y, this.width, this.height, this.color);
+    drawRectangle(this.context, this._x, this.y, this._width, this._height, this.color);
   }
 
+  get x() { return this._x; }
+  get height() { return this._height; }
+  get width() { return this._width; }
+
   private setNextPoint() {
-    this.x += this.direction;
+    this._x += this.direction;
   }
 
   private anticipateWallCollision() {
-    if (this.x <= 0) {
-      this.x = 0;
+    if (this._x <= 0) {
+      this._x = 0;
     }
 
-    if (this.x + this.width > this.canvas.width) {
-      this.x = this.canvas.width - this.width;
+    if (this._x + this._width > this.canvas.width) {
+      this._x = this.canvas.width - this._width;
     }
   }
 }
@@ -202,7 +206,7 @@ const draw = () => {
 
   if (playingField.isGameOver()) {
     alert('GAME OVER');
-    playingField = new PlayingField(canvas, context, ballStartX, ballStartY, r, ballStartColor);
+    playingField = new PlayingField(canvas, context, ballStartX, ballStartY, r, ballStartColor, paddle);
     paddle = new Paddle(canvas, context, paddleHeight, paddleWidth);
   }
 
