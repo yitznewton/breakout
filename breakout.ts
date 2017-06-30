@@ -52,17 +52,38 @@ class Ball {
   }
 }
 
+class Paddle {
+  private context: CanvasRenderingContext2D;
+  private x: number;
+  private y: number;
+  private color: string = '#0095DD';
+  private height: number;
+  private width: number;
+
+  constructor(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, height: number, width: number) {
+    this.context = context;
+    this.height = height;
+    this.width = width;
+    this.x = (canvas.width - this.width) / 2;
+    this.y = canvas.height - this.height;
+  }
+
+  draw() {
+    drawRectangle(this.context, this.x, this.y, this.width, this.height, this.color);
+  }
+}
+
 function clear(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
   context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-// function drawRectangle(context: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, color: string) {
-//   context.beginPath();
-//   context.rect(x, y, w, h);
-//   context.fillStyle = color;
-//   context.fill();
-//   context.closePath();
-// }
+function drawRectangle(context: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, color: string) {
+  context.beginPath();
+  context.rect(x, y, w, h);
+  context.fillStyle = color;
+  context.fill();
+  context.closePath();
+}
 
 function drawArc(context: CanvasRenderingContext2D,
                  x: number,
@@ -86,15 +107,21 @@ function drawCircle(context: CanvasRenderingContext2D, x: number, y: number, r: 
 const canvas: HTMLCanvasElement = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const context: CanvasRenderingContext2D = canvas.getContext('2d');
 
-var startX = canvas.width / 2;
-var startY = canvas.height - 30;
-var startColor = '#0095DD';
+const ballStartX = canvas.width / 2;
+const ballStartY = canvas.height - 30;
+const ballStartColor = '#0095DD';
+
+const paddleHeight = 10;
+const paddleWidth = 75;
+
 const r = 10;
-const ball = new Ball(canvas, context, startX, startY, r, startColor);
+const ball = new Ball(canvas, context, ballStartX, ballStartY, r, ballStartColor);
+const paddle = new Paddle(canvas, context, paddleHeight, paddleWidth);
 
 const draw = () => {
   clear(context, canvas);
   ball.draw();
+  paddle.draw();
 
   requestAnimationFrame(draw);
 };
