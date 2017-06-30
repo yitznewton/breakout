@@ -125,7 +125,7 @@ class Paddle {
     this.y = canvasHeight - this._height;
   }
 
-  update(direction: PaddleDirection) {
+  advance(direction: PaddleDirection) {
     this._x += direction;
     this.anticipateWallCollision();
   }
@@ -200,22 +200,33 @@ const paddleWidth = 75;
 
 const r = 10;
 const paddleInput = new PaddleInput();
-let paddle = new Paddle(canvas.width, canvas.height, paddleHeight, paddleWidth);
-let ball = new Ball(canvas.width, canvas.height, ballStartX, ballStartY, r, ballStartColor, paddle);
+
+const paddleFactory = function () {
+  return new Paddle(canvas.width, canvas.height, paddleHeight, paddleWidth);
+};
+
+const ballFactory = function (paddle) {
+  return new Ball(canvas.width, canvas.height, ballStartX, ballStartY, r, ballStartColor, paddle);
+};
+
+let paddle = paddleFactory();
+let ball = ballFactory(paddle);
 
 const draw = () => {
   clear(context, canvas);
+
+  paddle.advance(paddleInput.current());
   ball.advance();
+
+  ball.draw(context);
+  paddle.draw(context);
 
   if (ball.isGameOver()) {
     alert('GAME OVER');
-    ball = new Ball(canvas.width, canvas.height, ballStartX, ballStartY, r, ballStartColor, paddle);
-    paddle = new Paddle(canvas.width, canvas.height, paddleHeight, paddleWidth);
-  }
 
-  ball.draw(context);
-  paddle.update(paddleInput.current());
-  paddle.draw(context);
+    paddle = paddleFactory();
+    ball = ballFactory(paddle);
+  }
 
   requestAnimationFrame(draw);
 };
