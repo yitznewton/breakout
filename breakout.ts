@@ -110,37 +110,40 @@ class PaddleInput {
 }
 
 class Paddle {
-  private canvas: HTMLCanvasElement;
-  private context: CanvasRenderingContext2D;
+  private canvasWidth: number;
   private _x: number;
   private y: number;
   private _height: number;
   private _width: number;
   private color: string = '#0095DD';
-  private direction: PaddleDirection = PaddleDirection.Stationary;
 
-  constructor(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, height: number, width: number) {
-    this.canvas = canvas;
-    this.context = context;
+  constructor(canvasWidth: number, canvasHeight: number, height: number, width: number) {
+    this.canvasWidth = canvasWidth;
     this._height = height;
     this._width = width;
-    this._x = (canvas.width - this._width) / 2;
-    this.y = canvas.height - this._height;
+    this._x = (this.canvasWidth - this._width) / 2;
+    this.y = canvasHeight - this._height;
   }
 
-  draw(direction: PaddleDirection) {
-    this.direction = direction;
-    this.setNextPoint();
+  update(direction: PaddleDirection) {
+    this._x += direction;
     this.anticipateWallCollision();
-    drawRectangle(this.context, this._x, this.y, this._width, this._height, this.color);
   }
 
-  get x() { return this._x; }
-  get height() { return this._height; }
-  get width() { return this._width; }
+  draw(context: CanvasRenderingContext2D) {
+    drawRectangle(context, this._x, this.y, this._width, this._height, this.color);
+  }
 
-  private setNextPoint() {
-    this._x += this.direction;
+  get x() {
+    return this._x;
+  }
+
+  get height() {
+    return this._height;
+  }
+
+  get width() {
+    return this._width;
   }
 
   private anticipateWallCollision() {
@@ -148,8 +151,8 @@ class Paddle {
       this._x = 0;
     }
 
-    if (this._x + this._width > this.canvas.width) {
-      this._x = this.canvas.width - this._width;
+    if (this._x + this._width > this.canvasWidth) {
+      this._x = this.canvasWidth - this._width;
     }
   }
 }
@@ -197,7 +200,7 @@ const paddleWidth = 75;
 
 const r = 10;
 const paddleInput = new PaddleInput();
-let paddle = new Paddle(canvas, context, paddleHeight, paddleWidth);
+let paddle = new Paddle(canvas.width, canvas.height, paddleHeight, paddleWidth);
 let playingField = new PlayingField(canvas, context, ballStartX, ballStartY, r, ballStartColor, paddle);
 
 const draw = () => {
@@ -207,12 +210,12 @@ const draw = () => {
   if (playingField.isGameOver()) {
     alert('GAME OVER');
     playingField = new PlayingField(canvas, context, ballStartX, ballStartY, r, ballStartColor, paddle);
-    paddle = new Paddle(canvas, context, paddleHeight, paddleWidth);
+    paddle = new Paddle(canvas.width, canvas.height, paddleHeight, paddleWidth);
   }
 
   playingField.draw();
-
-  paddle.draw(paddleInput.current());
+  paddle.update(paddleInput.current());
+  paddle.draw(context);
 
   requestAnimationFrame(draw);
 };
