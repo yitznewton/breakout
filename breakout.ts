@@ -1,50 +1,64 @@
-class Ball {
+class PlayingField {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
-  private x: number;
-  private y: number;
-  private r: number;
-  private startColor: string;
+  private ballX: number;
+  private ballY: number;
+  private ballR: number;
+  private ballStartColor: string;
   private dx: number = 2;
   private dy: number = -2;
+  private paddle: Paddle;
 
-  constructor(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, startX: number, startY: number, r: number, startColor: string) {
+  constructor(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, startX: number, startY: number, r: number, startColor: string, paddle: Paddle) {
     this.canvas = canvas;
     this.context = context;
-    this.x = startX;
-    this.y = startY;
-    this.r = r;
-    this.startColor = startColor;
+    this.ballX = startX;
+    this.ballY = startY;
+    this.ballR = r;
+    this.ballStartColor = startColor;
+    this.paddle = paddle;
   }
 
-  draw() {
-    drawCircle(this.context, this.x, this.y, this.r, this.startColor);
+  advance() {
     this.anticipateWallCollisions();
+    this.anticipatePaddleCollision();
     this.setNextCenter();
   }
 
+  draw() {
+    drawCircle(this.context, this.ballX, this.ballY, this.ballR, this.ballStartColor);
+  }
+
+  isGameOver() {
+    return this.ballY + this.dy > this.canvas.height;
+  }
+
+  private anticipatePaddleCollision() {
+    if (this.ballY + this.dy <= this.canvas.height - this.paddle.height) return;
+
+    if (this.ballX > this.paddle.x && this.ballX < this.paddle.x + this.paddle.width) {
+      this.dy = -this.dy;
+    }
+  }
+
   private anticipateWallCollisions() {
-    if (this.y + this.dy < 0) {
+    if (this.ballY + this.dy < 0) {
       this.dy = -this.dy;
-      this.startColor = Ball.randomColor();
+      this.ballStartColor = PlayingField.randomColor();
     }
-    if (this.y + this.dy > this.canvas.height) {
-      this.dy = -this.dy;
-      this.startColor = Ball.randomColor();
-    }
-    if (this.x + this.dx < 0) {
+    if (this.ballX + this.dx < 0) {
       this.dx = -this.dx;
-      this.startColor = Ball.randomColor();
+      this.ballStartColor = PlayingField.randomColor();
     }
-    if (this.x + this.dx > this.canvas.width) {
+    if (this.ballX + this.dx > this.canvas.width) {
       this.dx = -this.dx;
-      this.startColor = Ball.randomColor();
+      this.ballStartColor = PlayingField.randomColor();
     }
   }
 
   private setNextCenter() {
-    this.x += this.dx;
-    this.y += this.dy;
+    this.ballX += this.dx;
+    this.ballY += this.dy;
   }
 
   private static randomColor(): string {
@@ -98,11 +112,11 @@ class PaddleInput {
 class Paddle {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
-  private x: number;
-  private y: number;
+  readonly x: number;
+  readonly y: number;
+  readonly height: number;
+  readonly width: number;
   private color: string = '#0095DD';
-  private height: number;
-  private width: number;
   private direction: PaddleDirection = PaddleDirection.Stationary;
 
   constructor(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, height: number, width: number) {
@@ -178,13 +192,22 @@ const paddleHeight = 10;
 const paddleWidth = 75;
 
 const r = 10;
-const ball = new Ball(canvas, context, ballStartX, ballStartY, r, ballStartColor);
 const paddleInput = new PaddleInput();
-const paddle = new Paddle(canvas, context, paddleHeight, paddleWidth);
+let paddle = new Paddle(canvas, context, paddleHeight, paddleWidth);
+let playingField = new PlayingField(canvas, context, ballStartX, ballStartY, r, ballStartColor, paddle);
 
 const draw = () => {
   clear(context, canvas);
-  ball.draw();
+  playingField.advance();
+
+  if (playingField.isGameOver()) {
+    alert('GAME OVER');
+    playingField = new PlayingField(canvas, context, ballStartX, ballStartY, r, ballStartColor);
+    paddle = new Paddle(canvas, context, paddleHeight, paddleWidth);
+  }
+
+  playingField.draw();
+
   paddle.draw(paddleInput.current());
 
   requestAnimationFrame(draw);
