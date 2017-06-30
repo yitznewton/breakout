@@ -147,13 +147,11 @@ class Paddle {
   }
 
   private anticipateWallCollision() {
-    if (this._x <= 0) {
-      this._x = 0;
-    }
+    this._x = Paddle.clamp(0, this._x, this.canvasWidth - this._width);
+  }
 
-    if (this._x + this._width > this.canvasWidth) {
-      this._x = this.canvasWidth - this._width;
-    }
+  private static clamp(min, x, max) {
+    return Math.min(Math.max(x, min), max);
   }
 }
 
