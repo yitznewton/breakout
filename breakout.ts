@@ -53,9 +53,46 @@ class Ball {
 }
 
 enum PaddleDirection {
-  Left = -1,
+  Left = -7,
   Stationary = 0,
-  Right = 1
+  Right = 7
+}
+
+enum ArrowKeys {
+  Left = 37,
+  Right = 39
+}
+
+class PaddleInput {
+  private leftPressed: boolean = false;
+  private rightPressed: boolean = false;
+
+  current(): PaddleDirection {
+    if (this.leftPressed && this.rightPressed) return PaddleDirection.Stationary;
+    if (this.leftPressed) return PaddleDirection.Left;
+    if (this.rightPressed) return PaddleDirection.Right;
+    return PaddleDirection.Stationary;
+  }
+
+  listen() {
+    document.addEventListener('keydown', (e) => {
+      if (e.keyCode == ArrowKeys.Left) {
+        this.leftPressed = true;
+      }
+      else if (e.keyCode == ArrowKeys.Right) {
+        this.rightPressed = true;
+      }
+    }, false);
+
+    document.addEventListener('keyup', (e) => {
+      if (e.keyCode == ArrowKeys.Left) {
+        this.leftPressed = false;
+      }
+      else if (e.keyCode == ArrowKeys.Right) {
+        this.rightPressed = false;
+      }
+    }, false);
+  }
 }
 
 class Paddle {
@@ -77,10 +114,11 @@ class Paddle {
     this.y = canvas.height - this.height;
   }
 
-  draw() {
-    drawRectangle(this.context, this.x, this.y, this.width, this.height, this.color);
-    this.anticipateWallCollision();
+  draw(direction: PaddleDirection) {
+    this.direction = direction;
     this.setNextPoint();
+    this.anticipateWallCollision();
+    drawRectangle(this.context, this.x, this.y, this.width, this.height, this.color);
   }
 
   private setNextPoint() {
@@ -89,11 +127,11 @@ class Paddle {
 
   private anticipateWallCollision() {
     if (this.x <= 0) {
-      this.direction = PaddleDirection.Stationary;
+      this.x = 0;
     }
 
     if (this.x + this.width > this.canvas.width) {
-      this.direction = PaddleDirection.Stationary;
+      this.x = this.canvas.width - this.width;
     }
   }
 }
@@ -141,14 +179,16 @@ const paddleWidth = 75;
 
 const r = 10;
 const ball = new Ball(canvas, context, ballStartX, ballStartY, r, ballStartColor);
+const paddleInput = new PaddleInput();
 const paddle = new Paddle(canvas, context, paddleHeight, paddleWidth);
 
 const draw = () => {
   clear(context, canvas);
   ball.draw();
-  paddle.draw();
+  paddle.draw(paddleInput.current());
 
   requestAnimationFrame(draw);
 };
 
+paddleInput.listen();
 requestAnimationFrame(draw);
