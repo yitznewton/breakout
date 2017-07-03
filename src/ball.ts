@@ -4,10 +4,10 @@ import { Paddle } from './paddle';
 export class Ball {
   private canvasWidth: number;
   private canvasHeight: number;
-  private ballX: number;
-  private ballY: number;
+  private _x: number;
+  private _y: number;
   private ballR: number;
-  private ballStartColor: string;
+  private color: string;
   private dx: number = 2;
   private dy: number = -2;
   private paddle: Paddle;
@@ -15,53 +15,33 @@ export class Ball {
   constructor(canvasWidth: number, canvasHeight: number, startX: number, startY: number, r: number, startColor: string, paddle: Paddle) {
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
-    this.ballX = startX;
-    this.ballY = startY;
+    this._x = startX;
+    this._y = startY;
     this.ballR = r;
-    this.ballStartColor = startColor;
+    this.color = startColor;
     this.paddle = paddle;
   }
 
   advance() {
-    this.anticipateWallCollisions();
-    this.anticipatePaddleCollision();
-    this.setNextCenter();
+    this._x += this.dx;
+    this._y += this.dy;
   }
 
   draw(context: CanvasRenderingContext2D) {
-    drawCircle(context, this.ballX, this.ballY, this.ballR, this.ballStartColor);
+    drawCircle(context, this._x, this._y, this.ballR, this.color);
   }
 
-  isGameOver() {
-    return this.ballY + this.dy > this.canvasHeight;
+  get x () { return this._x; }
+  get y () { return this._y; }
+
+  reverseX(): void {
+    this.dx = -this.dx;
+    this.color = Ball.randomColor();
   }
 
-  private anticipatePaddleCollision() {
-    if (this.ballY + this.dy <= this.canvasHeight - this.paddle.height) return;
-
-    if (this.ballX > this.paddle.x && this.ballX < this.paddle.x + this.paddle.width) {
-      this.dy = -this.dy;
-    }
-  }
-
-  private anticipateWallCollisions() {
-    if (this.ballY + this.dy < 0) {
-      this.dy = -this.dy;
-      this.ballStartColor = Ball.randomColor();
-    }
-    if (this.ballX + this.dx < 0) {
-      this.dx = -this.dx;
-      this.ballStartColor = Ball.randomColor();
-    }
-    if (this.ballX + this.dx > this.canvasWidth) {
-      this.dx = -this.dx;
-      this.ballStartColor = Ball.randomColor();
-    }
-  }
-
-  private setNextCenter() {
-    this.ballX += this.dx;
-    this.ballY += this.dy;
+  reverseY(): void {
+    this.dy = -this.dy;
+    this.color = Ball.randomColor();
   }
 
   private static randomColor(): string {

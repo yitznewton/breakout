@@ -28,6 +28,31 @@ const ballFactory = function (paddle) {
   return new Ball(canvas.width, canvas.height, ballStartX, ballStartY, r, ballStartColor, paddle);
 };
 
+function anticipatePaddleCollision() {
+  if (ball.y <= canvas.height - paddle.height) return;
+
+  if (ball.x > paddle.x && ball.x < paddle.x + paddle.width) {
+    ball.reverseY();
+  }
+}
+
+function anticipateWallCollisions() {
+  if (ball.y < 0) {
+    ball.reverseY();
+  }
+  if (ball.x < 0) {
+    ball.reverseX();
+  }
+  console.info(ball.x > canvas.width);
+  if (ball.x > canvas.width) {
+    ball.reverseX();
+  }
+}
+
+function isGameOver() {
+  return ball.y > canvas.height;
+}
+
 let paddle = paddleFactory();
 let ball = ballFactory(paddle);
 let brickField = new BrickField();
@@ -38,11 +63,14 @@ const draw = () => {
   paddle.advance(paddleInput.current());
   ball.advance();
 
+  anticipatePaddleCollision();
+  anticipateWallCollisions();
+
   ball.draw(context);
   paddle.draw(context);
   brickField.draw(context);
 
-  if (ball.isGameOver()) {
+  if (isGameOver()) {
     alert('GAME OVER');
 
     paddle = paddleFactory();
