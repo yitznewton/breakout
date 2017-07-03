@@ -1,6 +1,7 @@
 import { Ball } from './ball';
 import { PaddleInput } from './paddle-input';
 import { Paddle } from './paddle';
+import { BrickField } from './brick-field';
 
 function clear(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
   context.clearRect(0, 0, canvas.width, canvas.height);
@@ -29,6 +30,7 @@ const ballFactory = function (paddle) {
 
 let paddle = paddleFactory();
 let ball = ballFactory(paddle);
+let brickField = new BrickField();
 
 const draw = () => {
   clear(context, canvas);
@@ -38,6 +40,7 @@ const draw = () => {
 
   ball.draw(context);
   paddle.draw(context);
+  brickField.draw(context);
 
   if (ball.isGameOver()) {
     alert('GAME OVER');
