@@ -1,4 +1,5 @@
 import { each } from 'lodash';
+import { every } from 'lodash';
 import { drawRectangle } from './draw';
 
 const rowCount = 3;
@@ -44,5 +45,9 @@ export class BrickField {
 
   each(callback: (brick) => any): void {
     each(this.bricks, callback);
+  }
+
+  isEmpty(): boolean {
+    return every(this.bricks, brick => { return brick.active === false });
   }
 }

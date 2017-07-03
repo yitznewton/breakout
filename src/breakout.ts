@@ -31,6 +31,10 @@ const ballFactory = function (paddle) {
   return new Ball(canvas.width, canvas.height, ballStartX, ballStartY, r, ballStartColor, paddle);
 };
 
+const brickFieldFactory = function () {
+  return new BrickField(brickWidth, brickHeight);
+};
+
 function paddleBounce() {
   if (ball.y <= canvas.height - paddle.height) return;
 
@@ -46,7 +50,6 @@ function wallBounce() {
   if (ball.x < 0) {
     ball.reverseX();
   }
-  console.info(ball.x > canvas.width);
   if (ball.x > canvas.width) {
     ball.reverseX();
   }
@@ -65,9 +68,19 @@ function isGameOver() {
   return ball.y > canvas.height;
 }
 
+function isWon() {
+  return brickField.isEmpty();
+}
+
+let reset = function () {
+  paddle = paddleFactory();
+  ball = ballFactory(paddle);
+  brickField = brickFieldFactory();
+};
+
 let paddle = paddleFactory();
 let ball = ballFactory(paddle);
-let brickField = new BrickField(brickWidth, brickHeight);
+let brickField = brickFieldFactory();
 
 const draw = () => {
   clear(context, canvas);
@@ -85,9 +98,12 @@ const draw = () => {
 
   if (isGameOver()) {
     alert('GAME OVER');
+    reset();
+  }
 
-    paddle = paddleFactory();
-    ball = ballFactory(paddle);
+  if (isWon()) {
+    alert('YOU WINNNN!');
+    reset();
   }
 
   requestAnimationFrame(draw);
