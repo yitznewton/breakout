@@ -12,7 +12,8 @@ const color = '#0095DD';
 
 interface Brick {
   x: number,
-  y: number
+  y: number,
+  active: boolean
 }
 
 export class BrickField {
@@ -23,7 +24,8 @@ export class BrickField {
       for (let j = 0; j < rowCount; j++) {
         this.bricks.push({
           x: (i * (width + padding)) + offsetLeft,
-          y: (j * (height + padding)) + offsetTop
+          y: (j * (height + padding)) + offsetTop,
+          active: true
         });
       }
     }
@@ -31,6 +33,8 @@ export class BrickField {
 
   draw(context: CanvasRenderingContext2D) {
     each(this.bricks, brick => {
+      if (!brick.active) return;
+
       drawRectangle(context, brick.x, brick.y, width, height, color);
     });
   }
