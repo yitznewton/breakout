@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/yitznewton/breakout#readme",
   "devDependencies": {
+    "typescript": "^2.4.1",
     "webpack": "^3.0.0"
   }
 }
