@@ -3,8 +3,6 @@ import { drawRectangle } from './draw';
 
 const rowCount = 3;
 const columnCount = 5;
-const width = 75;
-const height = 20;
 const padding = 10;
 const offsetTop = 30;
 const offsetLeft = 30;
@@ -17,14 +15,19 @@ interface Brick {
 }
 
 export class BrickField {
+  private brickWidth: number;
+  private brickHeight: number;
   private bricks: Brick[] = [];
 
-  constructor() {
+  constructor(brickWidth: number, brickHeight: number) {
+    this.brickWidth = brickWidth;
+    this.brickHeight = brickHeight;
+
     for (let i = 0; i < columnCount; i++) {
       for (let j = 0; j < rowCount; j++) {
         this.bricks.push({
-          x: (i * (width + padding)) + offsetLeft,
-          y: (j * (height + padding)) + offsetTop,
+          x: (i * (this.brickWidth + padding)) + offsetLeft,
+          y: (j * (this.brickHeight + padding)) + offsetTop,
           active: true
         });
       }
@@ -35,7 +38,11 @@ export class BrickField {
     each(this.bricks, brick => {
       if (!brick.active) return;
 
-      drawRectangle(context, brick.x, brick.y, width, height, color);
+      drawRectangle(context, brick.x, brick.y, this.brickWidth, this.brickHeight, color);
     });
+  }
+
+  each(callback: (brick) => any): void {
+    each(this.bricks, callback);
   }
 }

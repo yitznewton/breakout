@@ -17,6 +17,9 @@ const ballStartColor = '#0095DD';
 const paddleHeight = 10;
 const paddleWidth = 75;
 
+const brickWidth = 75;
+const brickHeight = 20;
+
 const r = 10;
 const paddleInput = new PaddleInput();
 
@@ -28,7 +31,7 @@ const ballFactory = function (paddle) {
   return new Ball(canvas.width, canvas.height, ballStartX, ballStartY, r, ballStartColor, paddle);
 };
 
-function anticipatePaddleCollision() {
+function paddleBounce() {
   if (ball.y <= canvas.height - paddle.height) return;
 
   if (ball.x > paddle.x && ball.x < paddle.x + paddle.width) {
@@ -36,7 +39,7 @@ function anticipatePaddleCollision() {
   }
 }
 
-function anticipateWallCollisions() {
+function wallBounce() {
   if (ball.y < 0) {
     ball.reverseY();
   }
@@ -49,13 +52,22 @@ function anticipateWallCollisions() {
   }
 }
 
+function brickBounce() {
+  brickField.each(brick => {
+    if (brick.active && ball.x > brick.x && ball.x < brick.x + brickWidth && ball.y > brick.y && ball.y < brick.y + brickHeight) {
+      ball.reverseY();
+      brick.active = false;
+    }
+  });
+}
+
 function isGameOver() {
   return ball.y > canvas.height;
 }
 
 let paddle = paddleFactory();
 let ball = ballFactory(paddle);
-let brickField = new BrickField();
+let brickField = new BrickField(brickWidth, brickHeight);
 
 const draw = () => {
   clear(context, canvas);
@@ -63,8 +75,9 @@ const draw = () => {
   paddle.advance(paddleInput.current());
   ball.advance();
 
-  anticipatePaddleCollision();
-  anticipateWallCollisions();
+  paddleBounce();
+  wallBounce();
+  brickBounce();
 
   ball.draw(context);
   paddle.draw(context);
