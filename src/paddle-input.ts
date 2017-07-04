@@ -1,8 +1,20 @@
+import { find } from "lodash";
 import { Paddle } from "./paddle";
 
+const PADDLE_WIDTH = 75;
 export class PaddleInput {
   private leftPressed: boolean = false;
   private rightPressed: boolean = false;
+  private mousePosition: number = null;
+  private canvas: HTMLCanvasElement;
+
+  constructor(canvas: HTMLCanvasElement) {
+    this.canvas = canvas;
+  }
+
+  public update(paddle: Paddle): void {
+    paddle.x = find(this.fromAllInputs(paddle), (x) => x !== null);
+  }
 
   public listen() {
     document.addEventListener("keydown", (e) => {
@@ -20,14 +32,27 @@ export class PaddleInput {
         this.rightPressed = false;
       }
     }, false);
+
+    document.addEventListener("mousemove", (e) => {
+      const xRelativeToCanvas = e.clientX - this.canvas.offsetLeft;
+
+      if (xRelativeToCanvas > 0 && xRelativeToCanvas < this.canvas.width) {
+        this.mousePosition = xRelativeToCanvas - PADDLE_WIDTH / 2;
+      } else {
+        this.mousePosition = null;
+      }
+    });
   }
 
-  public update(paddle: Paddle): void {
-    paddle.x = this.positionFromKey(paddle);
+  private fromAllInputs(paddle: Paddle) {
+    return [
+      this.mousePosition,
+      this.fromKeyboard(paddle),
+    ];
   }
 
-  private positionFromKey(paddle): number {
-    return PaddleInput.anticipateWallCollision(paddle, this.dxFromKey());
+  private fromKeyboard(paddle): number {
+    return this.anticipateWallCollision(paddle, this.dxFromKey());
   }
 
   private dxFromKey(): number {
@@ -37,8 +62,8 @@ export class PaddleInput {
     return 0;
   }
 
-  private static anticipateWallCollision(paddle, dx) {
-    return PaddleInput.clamp(0, paddle.x + dx, paddle.canvasWidth - paddle.width);
+  private anticipateWallCollision(paddle, dx) {
+    return PaddleInput.clamp(0, paddle.x + dx, this.canvas.width - paddle.width);
   }
 
   private static clamp(min, x, max) {

@@ -21,7 +21,6 @@ const brickWidth = 75;
 const brickHeight = 20;
 
 const r = 10;
-const paddleInput = new PaddleInput();
 
 const paddleFactory = () => {
   return new Paddle(canvas.width, canvas.height, paddleHeight, paddleWidth);
@@ -86,6 +85,7 @@ const reset = () => {
   brickField = brickFieldFactory();
 };
 
+const paddleInput = new PaddleInput(canvas);
 let paddle = paddleFactory();
 let ball = ballFactory(paddle);
 let brickField = brickFieldFactory();
