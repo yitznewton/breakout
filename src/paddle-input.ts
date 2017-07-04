@@ -35,7 +35,7 @@ export class PaddleInput {
     }, false);
 
     document.addEventListener("touchmove", (e) => {
-      this.touchPosition = find(map(e.changedTouches,(touch) => {
+      this.touchPosition = find(map(e.changedTouches, (touch) => {
         const xRelativeToCanvas = touch.clientX - this.canvas.offsetLeft;
 
         if (xRelativeToCanvas > 0 && xRelativeToCanvas < this.canvas.width) {
