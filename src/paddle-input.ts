@@ -1,4 +1,4 @@
-import { find } from "lodash";
+import { find, map } from "lodash";
 import { Paddle } from "./paddle";
 
 const PADDLE_WIDTH = 75;
@@ -34,24 +34,32 @@ export class PaddleInput {
       }
     }, false);
 
-    const pointingDeviceListener = (propertyName) => {
-      return (e) => {
-        const xRelativeToCanvas = e.clientX - this.canvas.offsetLeft;
+    document.addEventListener("touchmove", (e) => {
+      this.touchPosition = find(map(e.changedTouches,(touch) => {
+        const xRelativeToCanvas = touch.clientX - this.canvas.offsetLeft;
 
         if (xRelativeToCanvas > 0 && xRelativeToCanvas < this.canvas.width) {
-          this[propertyName] = xRelativeToCanvas - PADDLE_WIDTH / 2;
+          return xRelativeToCanvas - PADDLE_WIDTH / 2;
         } else {
-          this[propertyName] = null;
+          return null;
         }
-      };
-    };
+      }), (x) => x !== null);
+    });
 
-    document.addEventListener("touchmove", pointingDeviceListener("touchPosition"));
-    document.addEventListener("mousemove", pointingDeviceListener("mousePosition"));
+    document.addEventListener("mousemove", (e) => {
+      const xRelativeToCanvas = e.clientX - this.canvas.offsetLeft;
+
+      if (xRelativeToCanvas > 0 && xRelativeToCanvas < this.canvas.width) {
+        this.mousePosition = xRelativeToCanvas - PADDLE_WIDTH / 2;
+      } else {
+        this.mousePosition = null;
+      }
+    });
   }
 
   private fromAllInputs(paddle: Paddle) {
     return [
+      this.touchPosition,
       this.mousePosition,
       this.fromKeyboard(paddle),
     ];
