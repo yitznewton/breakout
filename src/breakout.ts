@@ -85,7 +85,7 @@ let brickField = brickFieldFactory();
 const draw = () => {
   clear(context, canvas);
 
-  paddle.advance(paddleInput.current());
+  paddleInput.update(paddle);
   ball.advance();
 
   paddleBounce();

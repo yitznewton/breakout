@@ -1,18 +1,15 @@
-import { PaddleDirection } from './paddle-direction';
+import { Paddle } from './paddle';
 
 export class PaddleInput {
   private leftPressed: boolean = false;
   private rightPressed: boolean = false;
 
-  current(): PaddleDirection {
-    if (this.leftPressed && this.rightPressed) return PaddleDirection.Stationary;
-    if (this.leftPressed) return PaddleDirection.Left;
-    if (this.rightPressed) return PaddleDirection.Right;
-    return PaddleDirection.Stationary;
+  update(paddle: Paddle): void {
+    paddle.x = this.positionFromKey(paddle);
   }
 
   listen() {
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', e => {
       if (e.keyCode == ArrowKeys.Left) {
         this.leftPressed = true;
       }
@@ -21,7 +18,7 @@ export class PaddleInput {
       }
     }, false);
 
-    document.addEventListener('keyup', (e) => {
+    document.addEventListener('keyup', e => {
       if (e.keyCode == ArrowKeys.Left) {
         this.leftPressed = false;
       }
@@ -29,6 +26,25 @@ export class PaddleInput {
         this.rightPressed = false;
       }
     }, false);
+  }
+
+  private positionFromKey(paddle): number {
+    return PaddleInput.anticipateWallCollision(paddle, this.dxFromKey());
+  }
+
+  private dxFromKey(): number {
+    if (this.leftPressed && this.rightPressed) return 0;
+    if (this.leftPressed) return -7;
+    if (this.rightPressed) return 7;
+    return 0;
+  }
+
+  private static anticipateWallCollision(paddle, dx) {
+    return PaddleInput.clamp(0, paddle.x + dx, paddle.canvasWidth - paddle.width);
+  }
+
+  private static clamp(min, x, max) {
+    return Math.min(Math.max(x, min), max);
   }
 }
 
