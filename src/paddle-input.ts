@@ -5,6 +5,7 @@ const PADDLE_WIDTH = 75;
 export class PaddleInput {
   private leftPressed: boolean = false;
   private rightPressed: boolean = false;
+  private touchPosition: number = null;
   private mousePosition: number = null;
   private canvas: HTMLCanvasElement;
 
@@ -33,15 +34,20 @@ export class PaddleInput {
       }
     }, false);
 
-    document.addEventListener("mousemove", (e) => {
-      const xRelativeToCanvas = e.clientX - this.canvas.offsetLeft;
+    const pointingDeviceListener = (propertyName) => {
+      return (e) => {
+        const xRelativeToCanvas = e.clientX - this.canvas.offsetLeft;
 
-      if (xRelativeToCanvas > 0 && xRelativeToCanvas < this.canvas.width) {
-        this.mousePosition = xRelativeToCanvas - PADDLE_WIDTH / 2;
-      } else {
-        this.mousePosition = null;
-      }
-    });
+        if (xRelativeToCanvas > 0 && xRelativeToCanvas < this.canvas.width) {
+          this[propertyName] = xRelativeToCanvas - PADDLE_WIDTH / 2;
+        } else {
+          this[propertyName] = null;
+        }
+      };
+    };
+
+    document.addEventListener("touchmove", pointingDeviceListener("touchPosition"));
+    document.addEventListener("mousemove", pointingDeviceListener("mousePosition"));
   }
 
   private fromAllInputs(paddle: Paddle) {
