@@ -1,18 +1,18 @@
-import { Ball } from './ball';
-import { PaddleInput } from './paddle-input';
-import { Paddle } from './paddle';
-import { BrickField } from './brick-field';
+import { Ball } from "./ball";
+import { BrickField } from "./brick-field";
+import { Paddle } from "./paddle";
+import { PaddleInput } from "./paddle-input";
 
 function clear(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
   context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-const canvas: HTMLCanvasElement = document.getElementById('gameCanvas') as HTMLCanvasElement;
-const context: CanvasRenderingContext2D = canvas.getContext('2d');
+const canvas: HTMLCanvasElement = document.getElementById("gameCanvas") as HTMLCanvasElement;
+const context: CanvasRenderingContext2D = canvas.getContext("2d");
 
 const ballStartX = canvas.width / 2;
 const ballStartY = canvas.height - 30;
-const ballStartColor = '#0095DD';
+const ballStartColor = "#0095DD";
 
 const paddleHeight = 10;
 const paddleWidth = 75;
@@ -23,15 +23,15 @@ const brickHeight = 20;
 const r = 10;
 const paddleInput = new PaddleInput();
 
-const paddleFactory = function () {
+const paddleFactory = () => {
   return new Paddle(canvas.width, canvas.height, paddleHeight, paddleWidth);
 };
 
-const ballFactory = function (paddle) {
+const ballFactory = (paddle) => {
   return new Ball(canvas.width, canvas.height, ballStartX, ballStartY, r, ballStartColor, paddle);
 };
 
-const brickFieldFactory = function () {
+const brickFieldFactory = () => {
   return new BrickField(brickWidth, brickHeight);
 };
 
@@ -55,9 +55,17 @@ function wallBounce() {
   }
 }
 
+function brickBallCollision(brick, _ball: Ball) {
+  return brick.active
+    && _ball.x > brick.x
+    && _ball.x < brick.x + brickWidth
+    && _ball.y > brick.y
+    && _ball.y < brick.y + brickHeight;
+}
+
 function brickBounce() {
-  brickField.each(brick => {
-    if (brick.active && ball.x > brick.x && ball.x < brick.x + brickWidth && ball.y > brick.y && ball.y < brick.y + brickHeight) {
+  brickField.each((brick) => {
+    if (brickBallCollision(brick, ball)) {
       ball.reverseY();
       brick.active = false;
     }
@@ -72,7 +80,7 @@ function isWon() {
   return brickField.isEmpty();
 }
 
-let reset = function () {
+const reset = () => {
   paddle = paddleFactory();
   ball = ballFactory(paddle);
   brickField = brickFieldFactory();
@@ -97,12 +105,12 @@ const draw = () => {
   brickField.draw(context);
 
   if (isGameOver()) {
-    alert('GAME OVER');
+    alert("GAME OVER");
     reset();
   }
 
   if (isWon()) {
-    alert('YOU WINNNN!');
+    alert("YOU WINNNN!");
     reset();
   }
 

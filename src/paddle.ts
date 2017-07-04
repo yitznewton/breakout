@@ -1,12 +1,12 @@
-import { drawRectangle } from './draw';
+import { drawRectangle } from "./draw";
 
 export class Paddle {
-  private _canvasWidth: number;
-  x: number;
+  public x: number;
   private y: number;
+  private _canvasWidth: number;
   private _height: number;
   private _width: number;
-  private color: string = '#0095DD';
+  private color: string = "#0095DD";
 
   constructor(canvasWidth: number, canvasHeight: number, height: number, width: number) {
     this._canvasWidth = canvasWidth;
@@ -16,7 +16,7 @@ export class Paddle {
     this.y = canvasHeight - this._height;
   }
 
-  draw(context: CanvasRenderingContext2D) {
+  public draw(context: CanvasRenderingContext2D) {
     drawRectangle(context, this.x, this.y, this._width, this._height, this.color);
   }
 

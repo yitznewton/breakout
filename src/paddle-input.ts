@@ -1,31 +1,29 @@
-import { Paddle } from './paddle';
+import { Paddle } from "./paddle";
 
 export class PaddleInput {
   private leftPressed: boolean = false;
   private rightPressed: boolean = false;
 
-  update(paddle: Paddle): void {
-    paddle.x = this.positionFromKey(paddle);
-  }
-
-  listen() {
-    document.addEventListener('keydown', e => {
-      if (e.keyCode == ArrowKeys.Left) {
+  public listen() {
+    document.addEventListener("keydown", (e) => {
+      if (e.keyCode === ArrowKeys.Left) {
         this.leftPressed = true;
-      }
-      else if (e.keyCode == ArrowKeys.Right) {
+      } else if (e.keyCode === ArrowKeys.Right) {
         this.rightPressed = true;
       }
     }, false);
 
-    document.addEventListener('keyup', e => {
-      if (e.keyCode == ArrowKeys.Left) {
+    document.addEventListener("keyup", (e) => {
+      if (e.keyCode === ArrowKeys.Left) {
         this.leftPressed = false;
-      }
-      else if (e.keyCode == ArrowKeys.Right) {
+      } else if (e.keyCode === ArrowKeys.Right) {
         this.rightPressed = false;
       }
     }, false);
+  }
+
+  public update(paddle: Paddle): void {
+    paddle.x = this.positionFromKey(paddle);
   }
 
   private positionFromKey(paddle): number {
@@ -50,5 +48,5 @@ export class PaddleInput {
 
 enum ArrowKeys {
   Left = 37,
-  Right = 39
+  Right = 39,
 }

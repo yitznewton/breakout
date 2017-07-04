@@ -1,18 +1,18 @@
-import { each } from 'lodash';
-import { every } from 'lodash';
-import { drawRectangle } from './draw';
+import { each } from "lodash";
+import { every } from "lodash";
+import { drawRectangle } from "./draw";
 
 const rowCount = 3;
 const columnCount = 5;
 const padding = 10;
 const offsetTop = 30;
 const offsetLeft = 30;
-const color = '#0095DD';
+const color = "#0095DD";
 
 interface Brick {
-  x: number,
-  y: number,
-  active: boolean
+  x: number;
+  y: number;
+  active: boolean;
 }
 
 export class BrickField {
@@ -29,25 +29,25 @@ export class BrickField {
         this.bricks.push({
           x: (i * (this.brickWidth + padding)) + offsetLeft,
           y: (j * (this.brickHeight + padding)) + offsetTop,
-          active: true
+          active: true,
         });
       }
     }
   }
 
-  draw(context: CanvasRenderingContext2D) {
-    each(this.bricks, brick => {
+  public draw(context: CanvasRenderingContext2D) {
+    each(this.bricks, (brick) => {
       if (!brick.active) return;
 
       drawRectangle(context, brick.x, brick.y, this.brickWidth, this.brickHeight, color);
     });
   }
 
-  each(callback: (brick) => any): void {
+  public each(callback: (brick) => any): void {
     each(this.bricks, callback);
   }
 
-  isEmpty(): boolean {
-    return every(this.bricks, brick => { return brick.active === false });
+  public isEmpty(): boolean {
+    return every(this.bricks, (brick) => brick.active === false);
   }
 }

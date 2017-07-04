@@ -1,5 +1,5 @@
-import { drawCircle } from './draw';
-import { Paddle } from './paddle';
+import { drawCircle } from "./draw";
+import { Paddle } from "./paddle";
 
 export class Ball {
   private canvasWidth: number;
@@ -12,7 +12,13 @@ export class Ball {
   private dy: number = -2;
   private paddle: Paddle;
 
-  constructor(canvasWidth: number, canvasHeight: number, startX: number, startY: number, r: number, startColor: string, paddle: Paddle) {
+  constructor(canvasWidth: number,
+              canvasHeight: number,
+              startX: number,
+              startY: number,
+              r: number,
+              startColor: string,
+              paddle: Paddle) {
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
     this._x = startX;
@@ -22,30 +28,34 @@ export class Ball {
     this.paddle = paddle;
   }
 
-  advance() {
+  public advance() {
     this._x += this.dx;
     this._y += this.dy;
   }
 
-  draw(context: CanvasRenderingContext2D) {
+  public draw(context: CanvasRenderingContext2D) {
     drawCircle(context, this._x, this._y, this.ballR, this.color);
   }
 
-  get x () { return this._x; }
-  get y () { return this._y; }
+  get x() {
+    return this._x;
+  }
 
-  reverseX(): void {
+  get y() {
+    return this._y;
+  }
+
+  public reverseX(): void {
     this.dx = -this.dx;
     this.color = Ball.randomColor();
   }
 
-  reverseY(): void {
+  public reverseY(): void {
     this.dy = -this.dy;
     this.color = Ball.randomColor();
   }
 
   private static randomColor(): string {
-    return '#' + Math.floor(Math.random() * 16777215).toString(16);
+    return "#" + Math.floor(Math.random() * 16777215).toString(16);
   }
 }
-

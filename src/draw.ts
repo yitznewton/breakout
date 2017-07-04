@@ -1,4 +1,9 @@
-export function drawRectangle(context: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, color: string) {
+export function drawRectangle(context: CanvasRenderingContext2D,
+                              x: number,
+                              y: number,
+                              w: number,
+                              h: number,
+                              color: string) {
   context.beginPath();
   context.rect(x, y, w, h);
   context.fillStyle = color;
